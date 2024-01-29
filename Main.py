@@ -1,5 +1,5 @@
 import pandas as pd
-import deepface
+from deepface import DeepFace
 
 
 df = pd.read_csv('Student.csv', delimiter=',')
