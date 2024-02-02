@@ -21,6 +21,12 @@ afname = 'Absentees '+dateStr+'.csv'
 
 print('[Log 0] Verifying')
 
+unknownImage = fr.load_image_file(unknown_fp)
+unknownEncoding = fr.face_encodings(unknownImage)
+
+peopleCount = range(0,len(unknownEncoding))
+peopleCount = list(peopleCount)
+
 for index, row in df.iterrows():
     if index == 4:
         print("[Log 1] Half Done Succesfully")
@@ -28,15 +34,13 @@ for index, row in df.iterrows():
     StudPath = row['File Path']
 
     knownImage = fr.load_image_file(StudPath)
-    unknownImage = fr.load_image_file(unknown_fp)
-
     knownEncoding = fr.face_encodings(knownImage)[0]
-    unknownEncoding = fr.face_encodings(unknownImage)
 
-    for i in range(0,len(unknownEncoding)):
+    for i in peopleCount:
         results = fr.compare_faces([knownEncoding], unknownEncoding[i])
         
         if results[0] == True:
+            peopleCount.remove(i)
             presentees.append([row['Reg No'],row['Name']])
             break
         

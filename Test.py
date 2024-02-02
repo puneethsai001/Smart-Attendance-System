@@ -6,7 +6,6 @@ df = pd.read_csv('Student.csv', delimiter=',')
 
 presentees=[]
 absentees=[]
-encodings = []
 
 print('[Log 0] Verifying')
 
