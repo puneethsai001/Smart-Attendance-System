@@ -5,7 +5,6 @@
     of a class as an input and marks the students who are present and absent by generateing
     a new file.
 </p>
-<br>
 <p>
     Python 3.9 or above required (Avoid python 3.12 since AI algorithms are updated to this version).
 </p>  
