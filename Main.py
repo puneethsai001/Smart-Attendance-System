@@ -3,6 +3,9 @@ from tkinter import filedialog as fd
 import datetime as dt
 
 unknown_fp = fd.askopenfilename(filetypes=[("JPEG files", "*.jpg;*.jpeg")])
+if not unknown_fp:
+    print("[Log 0] No input File: Code Terminated")
+    exit()
 
 import face_recognition as fr
 
