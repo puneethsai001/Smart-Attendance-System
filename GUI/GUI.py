@@ -1,18 +1,14 @@
 from tkinter import *
 from tkinter import filedialog
 
-def resize_background(event):
-    global background_photo
-    global background_id
-    canvas.coords(background_id, 0, 0)  
-    canvas.itemconfig(background_id, image=background_photo) 
+
 
 
 gui= Tk()
 
 icon=PhotoImage(file='GUI/logo.png')
-button_image=PhotoImage(file='GUI/Screenshot 2024-02-06 170703.png')
-download_image=PhotoImage(file='GUI/Screenshot 2024-02-06 170417.png')
+button_image=PhotoImage(file='GUI/click.png')
+download_image=PhotoImage(file='GUI/download.png')
 
 gui.geometry("900x900")
 gui.title("Smart Attendance System")
@@ -24,10 +20,10 @@ canvas = Canvas(gui, width=900, height=900, bg="#121212", highlightthickness=0)
 canvas.pack(fill="both", expand=True)
 
 
-background_photo = PhotoImage(file='GUI/black-background-08-vecteezy.png')
+background_photo = PhotoImage(file='GUI/background.png')
 canvas.create_image(0, 0, image=background_photo, anchor='nw')
 
-canvas.bind('<Configure>', resize_background)
+
 
 
 
