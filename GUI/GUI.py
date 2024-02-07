@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
+from PIL import Image,ImageTk
+
 
 
 
@@ -16,12 +18,24 @@ gui.iconphoto(True,icon)
 gui.config(background="#121212")
 
 
-canvas = Canvas(gui, width=900, height=900, bg="#121212", highlightthickness=0)
+
+canvas = Canvas(gui, bg="#121212", highlightthickness=0)
 canvas.pack(fill="both", expand=True)
 
 
-background_photo = PhotoImage(file='GUI/background.png')
-canvas.create_image(0, 0, image=background_photo, anchor='nw')
+background_image = Image.open('GUI/background.png')
+background_photo = ImageTk.PhotoImage(background_image)
+
+def resize_bg(event):
+    global background_photo
+    resized_image = background_image.resize((event.width, event.height), Image.ANTIALIAS)
+    background_photo = ImageTk.PhotoImage(resized_image)
+    canvas.create_image(0, 0, image=background_photo, anchor='nw')
+
+    
+
+
+gui.bind("<Configure>", resize_bg)
 
 
 
@@ -69,6 +83,8 @@ gui.config(menu=menubar)
 
 filemenu=Menu(menubar)
 menubar.add_cascade(label="   ",menu=filemenu)
+
+
 
 
 
