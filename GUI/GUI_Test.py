@@ -1,39 +1,43 @@
 from tkinter import *
-from tkinter import filedialog
 import pandas as pd
+from tkinter import filedialog as fd
 import datetime as dt
+from PIL import Image, ImageTk
 import face_recognition as fr
-import sys
 
-processed_files = None  
+def processImage():
+    global pr_df, abs_df
+    global pfname, afname
 
-def process_image(filepath=None):
-    global processed_files  
+    unknown_fp = fd.askopenfilename(filetypes=[("JPEG files", "*.jpg;*.jpeg")])
+    if not unknown_fp:
+        update_log("[Log 0] No input File: Code Terminated")
+        return
 
-    if filepath is None:
-        filepath = filedialog.askopenfilename(title='Choose Your Image!')
-        if not filepath:
-            print("[Log 0] No input File: Code Terminated")
-            return
+    update_log(unknown_fp)
 
-    print(filepath)
     df = pd.read_csv('Student.csv', delimiter=',')
+
     presentees = []
     absentees = []
+
     dateObj = dt.datetime.now()
     dateStr = str(dateObj.date())
-    pfname = 'Presentees ' + dateStr + '.csv'
-    afname = 'Absentees ' + dateStr + '.csv'
-    print('[Log 0] Verifying')
 
-    unknownImage = fr.load_image_file(filepath)
+    pfname = 'Presentees '+dateStr+'.csv'
+    afname = 'Absentees '+dateStr+'.csv'
+
+    update_log('[Log 0] Verifying')
+
+    unknownImage = fr.load_image_file(unknown_fp)
     unknownEncoding = fr.face_encodings(unknownImage)
 
-    peopleCount = list(range(0,len(unknownEncoding)))
+    peopleCount = range(0, len(unknownEncoding))
+    peopleCount = list(peopleCount)
 
     for index, row in df.iterrows():
         if index == 4:
-            print("[Log 1] Half Done Succesfully")
+            update_log("[Log 1] Half Done Successfully")
 
         StudPath = row['File Path']
 
@@ -43,20 +47,20 @@ def process_image(filepath=None):
         for i in peopleCount:
             results = fr.compare_faces([knownEncoding], unknownEncoding[i])
 
-            if results[0] == True:
+            if results[0]:
                 peopleCount.remove(i)
                 presentees.append([row['Reg No'], row['Name']])
                 break
 
-        row_list = [row['Reg No'], row['Name']] 
+        mylist = [row['Reg No'], row['Name']]
 
-        if row_list not in presentees:
-            absentees.append(row_list)
+        if mylist not in presentees:
+            absentees.append(mylist)
 
-    pr_df = pd.DataFrame(columns=['Reg No','Name'])
-    abs_df = pd.DataFrame(columns=['Reg No','Name'])
+    pr_df = pd.DataFrame(columns=['Reg No', 'Name'])
+    abs_df = pd.DataFrame(columns=['Reg No', 'Name'])
 
-    print('[Log 2] Created new data frames')
+    update_log('[Log 2] Created new data frames')
 
     for i in presentees:
         pr_df.loc[len(pr_df)] = i
@@ -64,51 +68,20 @@ def process_image(filepath=None):
     for j in absentees:
         abs_df.loc[len(abs_df)] = j
 
-    print('[Log 3] Updated the data frames')
+    update_log('[Log 3] Updated the data frames')
 
+def downloadFile():
     pr_df.to_csv(pfname, sep=',', index=False, encoding='utf-8')
     abs_df.to_csv(afname, sep=',', index=False, encoding='utf-8')
 
-    print('[Log 4] Flushed the data to CSV files')
+    update_log('[Log 4] Flushed the data to CSV files')
 
-    print('[Log 5] Attendance Success')
-    print('Presentees File: ', pfname)
-    print('Absentees File: ', afname)
+    update_log('[Log 5] Attendance Success')
+    update_log('Presentees File: ' + pfname)
+    update_log('Absentees File: ' + afname)
 
-    
-    processed_files = (pfname, afname)
-
-def download_presentees(filename, download_location):
-    presentees_file = filedialog.asksaveasfilename(defaultextension=".csv", initialdir=download_location, filetypes=[("CSV files", "*.csv")])
-    if not presentees_file:
-        return
-    with open(filename, 'rb') as f_in:
-        with open(presentees_file, 'wb') as f_out:
-            f_out.write(f_in.read())
-
-def download_absentees(filename, download_location):
-    absentees_file = filedialog.asksaveasfilename(defaultextension=".csv", initialdir=download_location, filetypes=[("CSV files", "*.csv")])
-    if not absentees_file:
-        return
-    with open(filename, 'rb') as f_in:
-        with open(absentees_file, 'wb') as f_out:
-            f_out.write(f_in.read())
-
-def download():
-    global processed_files  
-    if processed_files is None:
-        print("Please process an image first!")
-        return
-
-    pfname, afname = processed_files
-    
-   
-    download_location = filedialog.askdirectory(title="Select Download Location")
-    
-    if download_location:
-        
-        download_presentees(pfname, download_location)
-        download_absentees(afname, download_location)
+def update_log(text):
+    log_label.config(text=log_label.cget("text") + "\n" + text)
 
 gui = Tk()
 
@@ -121,21 +94,28 @@ gui.title("Smart Attendance System")
 gui.iconphoto(True, icon)
 gui.config(background="#121212")
 
-canvas = Canvas(gui, width=900, height=900, bg="#121212", highlightthickness=0)
+canvas = Canvas(gui, bg="#121212", highlightthickness=0)
 canvas.pack(fill="both", expand=True)
 
-background_photo = PhotoImage(file='GUI/background.png')
-canvas.create_image(0, 0, image=background_photo, anchor='nw')
+background_image = Image.open('GUI/background.png')
+background_photo = ImageTk.PhotoImage(background_image)
 
 label = Label(gui,
               text="Smart Attendance System",
               font=('Elianto', 25, 'bold'),
               fg='white',
               bg='#121212')
+
 label.place(x=250, y=100)
 
-def openfile():
-    process_image()
+log_label = Label(gui,
+                  text="",
+                  font=('Elianto', 12),
+                  fg='white',
+                  bg='#121212',
+                  justify=LEFT)
+
+log_label.place(x=50, y=250)
 
 button = Button(gui,
                 text='Choose Image!',
@@ -146,25 +126,21 @@ button = Button(gui,
                 activebackground='white',
                 image=button_image,
                 compound='right',
-                command=openfile)
+                command=processImage)
+
 button.place(x=330, y=200)
 
-download_button = Button(gui,
-                         text='Download Presentees and Absentees file!',
-                         font=('Comic Sans', 18, 'bold'),
-                         fg='#00FF00',
-                         bg='black',
-                         activeforeground='black',
-                         activebackground='white',
-                         image=download_image,
-                         compound='right',
-                         command=download)
-download_button.place(x=200, y=400)
+download = Button(gui,
+                  text='Download Presentees and Absentees file!',
+                  font=('Comic Sans', 18, 'bold'),
+                  fg='#00FF00',
+                  bg='black',
+                  activeforeground='black',
+                  activebackground='white',
+                  image=download_image,
+                  compound='right',
+                  command=downloadFile)
 
-menubar = Menu(gui, background='red', fg='white')
-gui.config(menu=menubar)
-
-filemenu = Menu(menubar)
-menubar.add_cascade(label="", menu=filemenu)
+download.place(x=200, y=500)
 
 gui.mainloop()
