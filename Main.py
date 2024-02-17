@@ -1,6 +1,5 @@
 import pandas as pd
 from tkinter import filedialog as fd
-import datetime as dt
 
 unknown_fp = fd.askopenfilename(filetypes=[("JPEG files", "*.jpg;*.jpeg")])
 if not unknown_fp:
@@ -15,12 +14,6 @@ df = pd.read_csv('Student.csv', delimiter=',')
 
 presentees=[]
 absentees=[]
-
-dateObj = dt.datetime.now()
-dateStr = str(dateObj.date())
-
-pfname = 'Presentees '+dateStr+'.csv'
-afname = 'Absentees '+dateStr+'.csv'
 
 print('[Log 0] Verifying')
 
@@ -65,11 +58,11 @@ for j in absentees:
 
 print('[Log 3] Updated the data frames')
 
-pr_df.to_csv(pfname, sep=',', index=False, encoding='utf-8')
-abs_df.to_csv(afname, sep=',', index=False, encoding='utf-8')
+pr_df.to_csv('Presentees.csv', sep=',', index=False, encoding='utf-8')
+abs_df.to_csv('Absentees.csv', sep=',', index=False, encoding='utf-8')
 
 print('[Log 4] Flushed the data to CSV files')
 
 print('[Log 5] Attenadance Success')
-print('Presentees File: ',pfname)
-print('Absentees File: ', afname)
+print('Presentees File: Presentees.csv')
+print('Absentees File: Absentees.csv')
