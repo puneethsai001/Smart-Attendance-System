@@ -53,14 +53,14 @@ class FaceRecognitionAttendance:
         """Saves presentees and absentees to CSV files."""
         pd.DataFrame(self.presentees, columns=['Reg No', 'Name']).to_csv('Presentees.csv', index=False)
         pd.DataFrame(self.absentees, columns=['Reg No', 'Name']).to_csv('Absentees.csv', index=False)
-        print("[Log] Attendance processed successfully!")
+        print("Attendance processed successfully")
         print("Presentees File: Presentees.csv")
         print("Absentees File: Absentees.csv")
 
 if __name__ == "__main__":
     unknown_fp = fd.askopenfilename(filetypes=[("JPEG files", "*.jpg;*.jpeg")])
     if not unknown_fp:
-        print("[Log] No input File: Code Terminated")
+        print("No input File: Code Terminated")
         exit()
     
     attendance = FaceRecognitionAttendance('Student.csv')
